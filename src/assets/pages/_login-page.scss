@@ -1,0 +1,53 @@
+.login-page {
+    padding: 70px 0;
+    form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        background-color: #0000005c;
+        max-width: 300px;
+        border-radius: 5px;
+        padding-block-end: 35px;
+        padding-block-start: 5px;
+        margin: auto;
+        .fields {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: max-content;
+            max-width: 90%;
+            > div {
+                display: flex;
+                align-items: center;
+                label {
+                    flex-grow: 1;
+                    text-align: end;
+                    line-height: 1rem;
+                    position: absolute;
+                    transform: translateX(-1ch);
+                    transition: 0.3s ease-in-out;
+                    color: rgb(243, 118, 118);
+                }
+                input {
+                    width: 100%;
+                    background-color: #c9dde7;
+                    border-width: 1px;
+                }
+                input:focus ~ label,
+                input.dirty ~ label {
+                    font-size: 0.5rem;
+                    transform: translate(-1ch, -10px);
+                    color: unset;
+                    transition: 0.3s ease-in-out;
+                }
+            }
+        }
+        button {
+            min-width: 100px;
+            box-shadow: 0px 3px 9px 4px #333;
+            border: 0;
+            margin-top: 20px;
+        }
+    }
+}

@@ -1,0 +1,13 @@
+.home-page{
+    h1{
+        text-transform: capitalize;
+    }
+    .para1{
+        display: flex;
+        gap: 20px;
+        img{
+            width: 30%;
+            border-radius: 5px;
+        }
+    }
+}

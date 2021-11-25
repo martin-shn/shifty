@@ -1,0 +1,44 @@
+* {
+    box-sizing: border-box;
+    color: $clr3;
+}
+
+body {
+    direction: rtl;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: $clr1;
+    padding: 0;
+    margin: 0;
+}
+
+.main-layout {
+    padding: 10px 20px !important;
+}
+
+input,
+button {
+    padding: 10px;
+    &:active,
+    &:focus-visible {
+        outline: 0;
+    }
+}
+button {
+    background-color: $clr4;
+    color: $clr3;
+    border-radius: 1.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    &:hover {
+        transition: 0.2s;
+        background-color: $clr5;
+    }
+    &[disabled],
+    &[disabled]:hover {
+        background-color: inherit;
+        color: #7f7f7f;
+        cursor: not-allowed;
+    }
+}

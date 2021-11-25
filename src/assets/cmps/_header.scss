@@ -1,0 +1,49 @@
+.app-header {
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px 0;
+    * {
+        text-decoration: none;
+        color: brown;
+    }
+    & > div {
+        display: flex;
+        justify-content: space-between;
+        & > div {
+            display: flex;
+            gap: 20px;
+            text-transform: capitalize;
+        }
+        & > label {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #333!important;
+            position: absolute;
+            left: 20px;
+        }
+    }
+    & > nav {
+        display: flex;
+        justify-content: space-evenly;
+        gap: 20px;
+    }
+
+    &.one-line {
+        background-color: slateblue;
+        flex-direction: row;
+        * {
+            color: #ddd;
+        }
+        nav {
+            flex-grow: 1;
+            justify-content: center;
+            position: absolute;
+            left: 0;
+            width: 100%;
+            z-index: -1;
+        }
+    }
+}
