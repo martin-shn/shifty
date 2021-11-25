@@ -1,11 +1,18 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
+import { connect } from 'react-redux';
 import routes from './routes';
 import './assets/style.scss';
 import { AppHeader } from './cmps/App-header';
 import { AppFooter } from './cmps/App-footer';
+import { setLoggedInUser } from './store/user.action';
 
-export class App extends React.Component {
+class _App extends React.Component {
+    
+    componentDidMount(){
+        this.props.setLoggedInUser()
+    }
+
     render() {
         return (
             <>
@@ -20,3 +27,9 @@ export class App extends React.Component {
         );
     }
 }
+
+const mapDispatchToProps = {
+    setLoggedInUser
+}
+
+export const App = connect(null, mapDispatchToProps)(_App)

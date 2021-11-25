@@ -1,0 +1,71 @@
+.settings-page {
+    .box {
+        border: 1px solid #aaa;
+        padding: 20px;
+        &:not(:last-of-type) {
+            margin-bottom: 30px;
+        }
+        .box-name {
+            position: absolute;
+            transform: translateY(calc(-0.7rem - 20px));
+            color: $clr2;
+            font-size: 0.8rem;
+            background-color: $clr1;
+            padding: 0 10px;
+        }
+    }
+    .info {
+        display: flex;
+        gap: 15px;
+        > div {
+            display: flex;
+            align-items: center;
+            > label {
+                position: absolute;
+                transform: translateX(-1ch);
+                transition: 0.2s;
+            }
+            > input {
+                width: 100%;
+            }
+
+            > input:focus + label,
+            input.dirty + label {
+                transform: translate(-1ch, -0.8rem);
+                font-size: 0.5rem;
+                transition: 0.2s;
+            }
+        }
+    }
+    .table {
+        .table-container {
+            display: flex;
+            >div{
+                display: flex;
+            }
+            .table-day {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                padding: 0 5px;
+                > div {
+                    display: flex;
+                    flex-direction: row-reverse;
+                    align-items: center;
+                    gap: 1px;
+                    >select{
+                        font-size: .5rem;
+                        padding: 2px;
+                        min-width: 11ch;
+                    }
+                }
+            }
+            hr{
+                border-width: 0.5px;
+                border-style: solid;
+                border-image: linear-gradient(to bottom, rgba(0,0,0,0), black, rgba(0, 0, 0, 0)) 1 100%;
+                margin: 0;
+            }
+        }
+    }
+}

@@ -1,8 +1,24 @@
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import { userService } from '../services/user.service';
+import { setLoggedInUser } from '../store/user.action';
 
 export const LoginPage = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+
+    const history = useHistory();
+    
+    const dispatch = useDispatch();
+
+    const onSubmit = (ev, username, password) => {
+        ev.preventDefault();
+        if (userService.login({username, password})) {
+            dispatch(setLoggedInUser());
+            history.push('/main-panel');
+        } else {alert('error')}
+    };
 
     return (
         <section className='login-page'>
@@ -17,6 +33,7 @@ export const LoginPage = () => {
                             maxLength='12'
                             autoComplete='off'
                             autoCorrect='off'
+                            autoFocus
                             onChange={(ev) => setUsername(ev.target.value)}
                             value={username}
                         />
@@ -40,7 +57,3 @@ export const LoginPage = () => {
     );
 };
 
-const onSubmit = (ev, username, password) => {
-    ev.preventDefault();
-    console.log('username,password : ', username, password);
-};

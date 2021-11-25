@@ -1,55 +1,66 @@
-import { useEffect } from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Link, NavLink, withRouter } from 'react-router-dom';
+import { userService } from '../services/user.service';
+import { setLoggedInUser } from '../store/user.action';
 
-const _AppHeader = ({ location }) => {
+const _AppHeader = ({history}) => {
     const [scroll, setScroll] = useState(0);
-    const [loggedInUser, setLoggedInUser] = useState(null);
-    const [currPage, setCurrPage] = useState(null);
+    const [currPage, setCurrPage] = useState('');
+
+    const loggedInUser = useSelector(state => state.userModule.loggedInUser);
+    const dispatch = useDispatch();
 
     useEffect(() => {
         window.addEventListener('scroll', updateScroll);
-        setLoggedInUser(sessionStorage.getItem('loggedInUser') ? JSON.parse(sessionStorage.getItem('loggedInUser')) : null);
         return () => {
             window.removeEventListener('scroll', updateScroll);
         };
     }, []);
 
     useEffect(() => {
-        setCurrPage(location.pathname === '/' ? 'header' : null);
-    }, [location]);
+        setCurrPage(history.location.pathname);
+    }, [history.location.pathname]);
 
     const updateScroll = () => {
         setScroll(window.scrollY);
     };
 
     const onLogout = () => {
-        sessionStorage.removeItem('loggedInUser');
-        setLoggedInUser(null);
+        userService.logout()
+        dispatch(setLoggedInUser());
+        history.push('/')
     };
 
     return (
-        <section className={`main-layout app-header${currPage === 'header' ? (scroll > 15 ? ' one-line' : '') : scroll > 15 ? '' : ' one-line'}`}>
+        <section className={`main-layout app-header${currPage === '/' ? (scroll > 15 ? ' one-line' : '') : scroll > 15 ? '' : ' one-line'}`}>
             <div>
                 {!loggedInUser && (
                     <div>
-                        <Link to='/login'>התחברות</Link>
-                        <Link to='/'>הרשמה</Link>
+                        {currPage!=='/login' && <Link to='/login'>התחברות</Link>}
                     </div>
                 )}
                 {loggedInUser && (
                     <div>
-                        <span>שלום {loggedInUser.name},</span>
+                        <span>שלום {loggedInUser.fullname},</span>
                         <button onClick={onLogout}>התנתקות</button>
                     </div>
                 )}
                 <label>Shifty</label>
             </div>
-            <nav>
+            {!currPage.includes('/main-panel') && <nav>
                 <NavLink to='/'>דף בית</NavLink>
                 <NavLink to=''>אודות</NavLink>
                 <NavLink to=''>צור קשר</NavLink>
-            </nav>
+            </nav>}
+            {currPage.includes('/main-panel') && <nav>
+                <NavLink to='/main-panel'>ראשי</NavLink>
+                <NavLink to='/main-panel/table'>סידור עבודה</NavLink>
+                <NavLink to=''>בקשות</NavLink>
+                <NavLink to=''>לוח החלפות</NavLink>
+                <NavLink to='/main-panel/settings'>הגדרות</NavLink>
+            </nav>}
+
         </section>
     );
 };

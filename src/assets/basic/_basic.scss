@@ -16,7 +16,8 @@ body {
 }
 
 input,
-button {
+button,
+select {
     padding: 10px;
     &:active,
     &:focus-visible {
