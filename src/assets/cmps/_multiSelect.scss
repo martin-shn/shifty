@@ -1,0 +1,20 @@
+.multiselect {
+    overflow: hidden;
+    height: max-content;
+    position: absolute;
+    transform: translateY(2rem);
+    background-color: #fff;
+    border: 1px solid black;
+    display: flex;
+    flex-direction: column;
+    z-index: 110;
+}
+.multi-select-screen{
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    z-index: 100;
+    background-color: rgba(0, 0, 0, 0.178);
+}

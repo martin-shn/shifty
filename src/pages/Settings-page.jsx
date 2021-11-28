@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { MultiCheckboxSelect } from '../cmps/Multi-checkbox-select';
 import { useForm } from '../hooks/useForm';
+import { globalService } from '../services/global.service';
 
 export const SettingsPage = () => {
     const loggedInUser = useSelector((state) => state.userModule.loggedInUser);
+    const globalData = useSelector((state) => state.userModule.globalData);
     const userData = useSelector((state) => state.userModule.userData);
     const [formFields, handleChange] = useForm({ fullname: '', phone: '', email: '', role: [] });
     const {fullname, phone, email, role } = formFields
@@ -12,6 +15,26 @@ export const SettingsPage = () => {
     const hours = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 0];
     const [state, setState] = useState({});
     const toHoursRef = useRef([]);
+    const multiSelectRef = useRef(null);
+    const [multi, setMulti] = useState(false)
+    const [localRoles, setLocalRoles] = useState(globalData.roles||[])
+
+    useEffect(() => {
+        console.log(globalData);
+    }, [globalData])
+
+    let localRolesObj = []
+    useEffect(() => {
+        console.log('ggg',localRolesObj);
+        console.log(localRoles);
+        localRolesObj = localRoles.map(item=>{
+            // console.log('item:',item, 'role:', role, 'loggedinuser', loggedInUser);
+            return {name:item, isChecked:(loggedInUser.role).includes(item)}
+        })
+        console.log(localRolesObj);
+        setLocalRoles(localRolesObj)
+
+    }, [localRolesObj])
 
     useEffect(()=>{
         handleChange({target:{name: 'fullname', value:loggedInUser?.fullname}})
@@ -21,20 +44,20 @@ export const SettingsPage = () => {
 
         setState({
             ...state,
-            fromHours0:userData.table?.from0||hours[0].toString().padStart(2,0)+':00',
-            toHours0:userData.table?.to0||hours[1].toString().padStart(2,0)+':00',
-            fromHours1:userData.table?.from1||hours[0].toString().padStart(2,0)+':00',
-            toHours1:userData.table?.to1||hours[1].toString().padStart(2,0)+':00',
-            fromHours2:userData.table?.from2||hours[0].toString().padStart(2,0)+':00',
-            toHours2:userData.table?.to2||hours[1].toString().padStart(2,0)+':00',
-            fromHours3:userData.table?.from3||hours[0].toString().padStart(2,0)+':00',
-            toHours3:userData.table?.to3||hours[1].toString().padStart(2,0)+':00',
-            fromHours4:userData.table?.from4||hours[0].toString().padStart(2,0)+':00',
-            toHours4:userData.table?.to4||hours[1].toString().padStart(2,0)+':00',
-            fromHours5:userData.table?.from5||hours[0].toString().padStart(2,0)+':00',
-            toHours5:userData.table?.to5||hours[1].toString().padStart(2,0)+':00',
-            fromHours6:userData.table?.from6||hours[0].toString().padStart(2,0)+':00',
-            toHours6:userData.table?.to6||hours[1].toString().padStart(2,0)+':00',
+            fromHours0:userData.table?.from0||'ללא',
+            toHours0:userData.table?.to0||'ללא',
+            fromHours1:userData.table?.from1||'ללא',
+            toHours1:userData.table?.to1||'ללא',
+            fromHours2:userData.table?.from2||'ללא',
+            toHours2:userData.table?.to2||'ללא',
+            fromHours3:userData.table?.from3||'ללא',
+            toHours3:userData.table?.to3||'ללא',
+            fromHours4:userData.table?.from4||'ללא',
+            toHours4:userData.table?.to4||'ללא',
+            fromHours5:userData.table?.from5||'ללא',
+            toHours5:userData.table?.to5||'ללא',
+            fromHours6:userData.table?.from6||'ללא',
+            toHours6:userData.table?.to6||'ללא',
          })
     },[userData])
 
@@ -78,12 +101,23 @@ export const SettingsPage = () => {
                         <input
                             id='role'
                             type='text'
+                            ref={multiSelectRef}
                             disabled={!role?.includes('מנהל')}
                             className={role ? 'dirty' : ''}
                             name='role'
                             value={role?.join(', ')}
-                            onChange={handleChange}
+                            onClick={()=>setMulti(!multi)}
                         />
+                        {multi && <MultiCheckboxSelect 
+                            id='role' 
+                            data={localRoles} 
+                            refEl={multiSelectRef} 
+                            onClose={()=>{
+                                setMulti(!multi)
+                                globalService.updateRoles(role)
+                            }}
+                            handleChange={(roles)=>handleChange({target:{name:'role', value: roles}})}
+                        />}
                         <label htmlFor='role'>תפקיד</label>
                     </div>
                 </div>

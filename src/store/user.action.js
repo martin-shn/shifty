@@ -1,12 +1,15 @@
 // import { storgeService } from "../service/storage.service";
 import { userService } from "../services/user.service";
+import { globalService } from "../services/global.service";
 
 export function setLoggedInUser(){
     const loggedInUser = userService.getLoggedInUser()
-    const userData = userService.getUserData(loggedInUser._id)
+    const userData = userService.getUserData(loggedInUser?._id)
+    const globalData = globalService.getGlobalData()
     return (dispatch) => {
         dispatch({ type: 'SET_LOGGED_IN_USER', loggedInUser })
         dispatch({ type: 'SET_USER_DATA', userData })
+        dispatch({ type: 'SET_GLOBAL_DATA', globalData })
     }
 }
 

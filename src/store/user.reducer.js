@@ -1,5 +1,6 @@
 const initialState = {
     userData: [],
+    globalData: [],
     loggedInUser: null
 }
 export function userReducer(state = initialState, action) {
@@ -10,6 +11,9 @@ export function userReducer(state = initialState, action) {
             break;
         case 'SET_USER_DATA':
             newState = { ...state, userData: action.userData }
+            break;
+        case 'SET_GLOBAL_DATA':
+            newState = { ...state, globalData: action.globalData }
             break;
 
         default:

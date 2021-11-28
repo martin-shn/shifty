@@ -25,12 +25,12 @@
                 transform: translateX(-1ch);
                 transition: 0.2s;
             }
-            > input {
+            & > input {
                 width: 100%;
             }
 
-            > input:focus + label,
-            input.dirty + label {
+            & > input:focus ~ label,
+            input.dirty ~ label {
                 transform: translate(-1ch, -0.8rem);
                 font-size: 0.5rem;
                 transition: 0.2s;
