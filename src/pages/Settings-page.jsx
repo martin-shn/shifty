@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { MultiCheckboxSelect } from '../cmps/Multi-checkbox-select';
 import { useForm } from '../hooks/useForm';
@@ -66,6 +66,22 @@ export const SettingsPage = () => {
             toHours6: userData.table?.to6 || 'ללא',
         })
     }, [userData])
+
+    useEffect(() => {
+        console.log(state);
+    }, [state])
+
+    const onChangeTableHour = ({ target }, idx, type) => {
+        console.log('id:', target.id);
+        if (type === 'fromHours') {
+            setState({ ...state, [target.id]: target.value});
+        }
+        else {
+
+            setState({ ...state, [target.id]: target.value });
+        }
+    }
+
 
     if (!loggedInUser) return <div className='ltr'>Loading...</div>;
     else
@@ -138,10 +154,8 @@ export const SettingsPage = () => {
                                         <div>
                                             <select
                                                 id={`fromHours${idx}`}
-                                                onChange={(ev) => {
-                                                    setState({ ...state, [`fromHours${idx}`]: ev.target.value });
-                                                }}
-                                                value={state[`toHours${idx}`] === 'ללא' ? 'ללא' : state[`fromHours${idx}`]}
+                                                onChange={(ev) => { onChangeTableHour(ev, idx, 'fromHours') }}
+                                                value={state[`fromHours${idx}`] === 'ללא' ? 'ללא' : state[`fromHours${idx}`]}
                                             >
                                                 <option>ללא</option>
                                                 {hours.map((hour, fromHourIdx) => {
@@ -152,7 +166,8 @@ export const SettingsPage = () => {
                                             <select
                                                 id={`toHours${idx}`}
                                                 ref={(el) => (toHoursRef.current[idx] = el)}
-                                                onChange={(ev) => setState({ ...state, [`toHours${idx}`]: ev.target.value })}
+                                                onChange={(ev) => { onChangeTableHour(ev, idx, 'toHours') }}
+                                                onChange={(ev) => { onChangeTableHour(ev, idx, 'toHours') }}
                                                 value={state[`toHours${idx}`]}
                                             >
                                                 {state[`fromHours${idx}`] === 'ללא'
