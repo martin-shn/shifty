@@ -1,6 +1,11 @@
 import React from 'react';
+import { globalService } from '../services/global.service';
+import { userService } from '../services/user.service';
 
 export function HomePage() {
+  userService.loadUserData()
+  globalService.loadGlobalData()
+  
   return (
     <div className="home-page main-layout">
       <h1 className="center">shifty</h1>
