@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { MultiCheckboxSelect } from '../cmps/Multi-checkbox-select';
 import { useForm } from '../hooks/useForm';
@@ -12,9 +12,6 @@ export const SettingsPage = () => {
     const userData = useSelector((state) => state.userModule.userData);
     const [formFields, handleChange] = useForm({ fullname: '', phone: '', email: '', role: [] });
     const { fullname, phone, email, role } = formFields
-
-
-
 
     const [state, setState] = useState({});
     const toHoursRef = useRef([]);
@@ -48,11 +45,6 @@ export const SettingsPage = () => {
 
 
     useEffect(() => {
-        // handleChange({ target: { name: 'fullname', value: loggedInUser?.fullname } })
-        // handleChange({ target: { name: 'phone', value: loggedInUser?.phone } })
-        // handleChange({ target: { name: 'email', value: loggedInUser?.email } })
-        // handleChange({ target: { name: 'role', value: loggedInUser?.role } })
-
         setState({
             ...state,
             fromHours0: userData.table?.fromHours0 || 'ללא',
@@ -72,17 +64,7 @@ export const SettingsPage = () => {
         })
     }, [userData])
 
-    useEffect(() => {
-        //     for (let i=0; i<7 ; i++){
-        //         setTimeout(()=>{setState({...state, [`toHours${i}`]: toHoursRef.current[i]?.value})},100)
-        //     }
-        //     // [`toHours${idx}`]: toHoursRef.current[idx].value
-        console.log(state);
-    }, [state])
-
-
     const onChangeTableHour = ({ target }, idx, type) => {
-
         let fromHourNum = +target.value.substr(0, 2)
         let toHourNum = state[`toHours${idx}`] === 'ללא' ? 'ללא' : +state[`toHours${idx}`].substr(0, 2)
         if (target.value === 'ללא') {
