@@ -34,7 +34,7 @@ export const SettingsPage = () => {
         console.log(localRolesObj);
         setLocalRoles(localRolesObj)
 
-    }, [localRolesObj])
+    }, [])
 
     useEffect(()=>{
         handleChange({target:{name: 'fullname', value:loggedInUser?.fullname}})
