@@ -67,6 +67,10 @@ export const SettingsPage = () => {
         })
     }, [userData])
 
+    const onSave = () => {
+        console.log('Saving this form');
+    }
+
     if (!loggedInUser) return <div className='ltr'>Loading...</div>;
     else
         return (
@@ -141,7 +145,7 @@ export const SettingsPage = () => {
                                                 onChange={(ev) => {
                                                     setState({ ...state, [`fromHours${idx}`]: ev.target.value });
                                                 }}
-                                                value={state[`toHours${idx}`] === 'ללא' ? 'ללא' : state[`fromHours${idx}`]}
+                                                value={state[`fromHours${idx}`]}
                                             >
                                                 <option>ללא</option>
                                                 {hours.map((hour, fromHourIdx) => {
@@ -173,6 +177,7 @@ export const SettingsPage = () => {
                         })}
                     </div>
                 </div>
+                <button onClick={onSave}>שמור</button>
             </section>
         );
 };
