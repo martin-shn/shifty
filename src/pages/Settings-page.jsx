@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { MultiCheckboxSelect } from '../cmps/Multi-checkbox-select';
 import { useForm } from '../hooks/useForm';
 import { globalService } from '../services/global.service';
+import { userService } from '../services/user.service';
 
 export const SettingsPage = () => {
     const loggedInUser = useSelector((state) => state.userModule.loggedInUser);
@@ -14,29 +15,32 @@ export const SettingsPage = () => {
 
 
 
-    const days = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
-    const hours = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 0];
+    
     const [state, setState] = useState({});
     const toHoursRef = useRef([]);
     const multiSelectRef = useRef(null);
     const [multi, setMulti] = useState(false)
     const [localRoles, setLocalRoles] = useState([])
     const [isRun, setIsRun] = useState(true)
+    const [days, setDays] = useState([])
+    const [hours, setHours] = useState([])
 
     useEffect(() => {
         if (Object.keys(globalData).length) {
             setLocalRoles(globalData.roles)
-            console.log('globalData', globalData);
         }
     }, [globalData.roles])
+    
+    useEffect(() => {
+        setDays(globalService.getTableDays())
+        setHours(globalService.getTableHours())
+    }, [])
 
     useEffect(() => {
-        console.log('localRoles', localRoles);
         if (isRun && localRoles.length) {
             setLocalRoles(localRoles.map(item => {
                 return { name: item, isChecked: (loggedInUser.role).includes(item) }
             }))
-            console.log('localRoles', localRoles);
             setIsRun(!isRun)
         }
     }, [localRoles])
@@ -50,25 +54,45 @@ export const SettingsPage = () => {
 
         setState({
             ...state,
-            fromHours0: userData.table?.from0 || 'ללא',
-            toHours0: userData.table?.to0 || 'ללא',
-            fromHours1: userData.table?.from1 || 'ללא',
-            toHours1: userData.table?.to1 || 'ללא',
-            fromHours2: userData.table?.from2 || 'ללא',
-            toHours2: userData.table?.to2 || 'ללא',
-            fromHours3: userData.table?.from3 || 'ללא',
-            toHours3: userData.table?.to3 || 'ללא',
-            fromHours4: userData.table?.from4 || 'ללא',
-            toHours4: userData.table?.to4 || 'ללא',
-            fromHours5: userData.table?.from5 || 'ללא',
-            toHours5: userData.table?.to5 || 'ללא',
-            fromHours6: userData.table?.from6 || 'ללא',
-            toHours6: userData.table?.to6 || 'ללא',
+            fromHours0: userData.table?.fromHours0 || 'ללא',
+            toHours0: userData.table?.toHours0 || 'ללא',
+            fromHours1: userData.table?.fromHours1 || 'ללא',
+            toHours1: userData.table?.toHours1 || 'ללא',
+            fromHours2: userData.table?.fromHours2 || 'ללא',
+            toHours2: userData.table?.toHours2 || 'ללא',
+            fromHours3: userData.table?.fromHours3 || 'ללא',
+            toHours3: userData.table?.toHours3 || 'ללא',
+            fromHours4: userData.table?.fromHours4 || 'ללא',
+            toHours4: userData.table?.toHours4 || 'ללא',
+            fromHours5: userData.table?.fromHours5 || 'ללא',
+            toHours5: userData.table?.toHours5 || 'ללא',
+            fromHours6: userData.table?.fromHours6 || 'ללא',
+            toHours6: userData.table?.toHours6 || 'ללא',
         })
     }, [userData])
 
+    useEffect(() => {
+    //     for (let i=0; i<7 ; i++){
+    //         setTimeout(()=>{setState({...state, [`toHours${i}`]: toHoursRef.current[i]?.value})},100)
+    //     }
+    //     // [`toHours${idx}`]: toHoursRef.current[idx].value
+        console.log(state);
+    }, [state])
+
+
     const onSave = () => {
         console.log('Saving this form');
+        const dataToUpdate = {
+            ...loggedInUser,
+            fullname: fullname ? fullname : loggedInUser.fullname, 
+            phone: phone ? phone : loggedInUser.phone, 
+            email: email ? email : loggedInUser.email, 
+            role: localRoles.filter(role => role.isChecked).map(role => role.name),
+            table:{
+                ...state
+            }
+        }
+        userService.updateUserData(dataToUpdate)
     }
 
     if (!loggedInUser) return <div className='ltr'>Loading...</div>;
@@ -143,7 +167,7 @@ export const SettingsPage = () => {
                                             <select
                                                 id={`fromHours${idx}`}
                                                 onChange={(ev) => {
-                                                    setState({ ...state, [`fromHours${idx}`]: ev.target.value });
+                                                    setState({ ...state, [`fromHours${idx}`]: ev.target.value});
                                                 }}
                                                 value={state[`fromHours${idx}`]}
                                             >
@@ -178,6 +202,7 @@ export const SettingsPage = () => {
                     </div>
                 </div>
                 <button onClick={onSave}>שמור</button>
+                <button onClick={()=>console.log(toHoursRef.current[1].value)}>print refs</button>
             </section>
         );
 };
