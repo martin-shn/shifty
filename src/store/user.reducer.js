@@ -1,6 +1,6 @@
 const initialState = {
     userData: [],
-    globalData: [],
+    globalData: {},
     loggedInUser: null
 }
 export function userReducer(state = initialState, action) {
