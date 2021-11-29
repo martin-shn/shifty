@@ -27,6 +27,9 @@
             }
             & > input {
                 width: 100%;
+                &:invalid{
+                    color: red;
+                }
             }
 
             & > input:focus ~ label,
@@ -71,5 +74,15 @@
     &>button{
         display: flex;
         margin: 20px auto 0;
+    }
+    &>.error-msg{
+        justify-content: center;
+        display: flex;
+        &.error{
+            color: red;
+        }
+        &.success{
+            color: green;
+        }
     }
 }

@@ -1,5 +1,6 @@
 import { users } from '../data/users';
 import { userData } from '../data/userData';
+import { setLoggedInUser } from '../store/user.action';
 
 export const userService = {
     getLoggedInUser,
@@ -52,14 +53,37 @@ function getUserData(userId) {
 }
 
 function updateUserData(userData) {
+    const userInfo = {
+        _id:userData._id,
+        username: userData.username,
+        fullname: userData.fullname,
+        phone: userData.phone,
+        email: userData.email,
+        role: userData.role
+    }
     const usersData = JSON.parse(localStorage.getItem(USERDATA_DB));
     const idx = usersData.findIndex((user) => user._id === userData._id);
     usersData.splice(idx, 1, userData);
     localStorage.setItem(USERDATA_DB, JSON.stringify(usersData));
+    sessionStorage.setItem('loggedInUser', JSON.stringify(userInfo))
+    setLoggedInUser()
+    // update user info in USERDB
+    updateUserInfo(userInfo)
 }
 
 function saveUserData(userData) {
     const usersData = JSON.parse(localStorage.getItem(USERDATA_DB));
     usersData.push(userData);
     localStorage.setItem(USERDATA_DB, JSON.stringify(usersData));
+}
+
+function updateUserInfo(userInfo){
+    const usersInfo = JSON.parse(localStorage.getItem(USERS_DB));
+    const idx = usersInfo.findIndex((user) => user._id === userInfo._id);
+    const updatedInfo = {
+        ...usersInfo[idx],
+        ...userInfo
+    }
+    usersInfo.splice(idx, 1, updatedInfo);
+    localStorage.setItem(USERS_DB, JSON.stringify(usersInfo));    
 }

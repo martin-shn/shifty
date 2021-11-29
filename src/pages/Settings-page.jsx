@@ -15,7 +15,7 @@ export const SettingsPage = () => {
 
 
 
-    
+
     const [state, setState] = useState({});
     const toHoursRef = useRef([]);
     const multiSelectRef = useRef(null);
@@ -24,13 +24,14 @@ export const SettingsPage = () => {
     const [isRun, setIsRun] = useState(true)
     const [days, setDays] = useState([])
     const [hours, setHours] = useState([])
+    const [errorMsg, setErrorMsg] = useState({})
 
     useEffect(() => {
         if (Object.keys(globalData).length) {
             setLocalRoles(globalData.roles)
         }
     }, [globalData.roles])
-    
+
     useEffect(() => {
         setDays(globalService.getTableDays())
         setHours(globalService.getTableHours())
@@ -72,42 +73,66 @@ export const SettingsPage = () => {
     }, [userData])
 
     useEffect(() => {
-    //     for (let i=0; i<7 ; i++){
-    //         setTimeout(()=>{setState({...state, [`toHours${i}`]: toHoursRef.current[i]?.value})},100)
-    //     }
-    //     // [`toHours${idx}`]: toHoursRef.current[idx].value
+        //     for (let i=0; i<7 ; i++){
+        //         setTimeout(()=>{setState({...state, [`toHours${i}`]: toHoursRef.current[i]?.value})},100)
+        //     }
+        //     // [`toHours${idx}`]: toHoursRef.current[idx].value
         console.log(state);
     }, [state])
 
 
     const onChangeTableHour = ({ target }, idx, type) => {
-        console.log('id:', target.id);
 
-        setState({ ...state, [`fromHours${idx}`]: ev.target.value});
-
-        
-        if (type === 'fromHours') {
-            setState({ ...state, [target.id]: target.value});
-        }
-        else {
-
-            setState({ ...state, [target.id]: target.value });
-        }
+        let fromHourNum = +target.value.substr(0, 2)
+        let toHourNum = state[`toHours${idx}`] === 'ללא' ? 'ללא' : +state[`toHours${idx}`].substr(0, 2)
+        if (target.value === 'ללא') {
+            setState({ ...state, [target.id]: 'ללא', [`toHours${idx}`]: 'ללא' });
+        } else if ((type === 'fromHours') && (state[target.id] === 'ללא' || toHourNum <= fromHourNum)) {
+            fromHourNum = ((fromHourNum + 1).toString().padStart(2, 0) + ':00');
+            setState({ ...state, [target.id]: target.value, [`toHours${idx}`]: fromHourNum });
+        } else setState({ ...state, [target.id]: target.value });
     }
 
     const onSave = () => {
-        console.log('Saving this form');
-        const dataToUpdate = {
-            ...loggedInUser,
-            fullname: fullname ? fullname : loggedInUser.fullname, 
-            phone: phone ? phone : loggedInUser.phone, 
-            email: email ? email : loggedInUser.email, 
+        const updatedLoggedInUser = {
+            fullname: fullname ? fullname : loggedInUser.fullname,
+            phone: phone ? phone : loggedInUser.phone,
+            email: email ? email : loggedInUser.email,
             role: localRoles.filter(role => role.isChecked).map(role => role.name),
-            table:{
-                ...state
-            }
         }
-        userService.updateUserData(dataToUpdate)
+        // Validate fields:
+        let regex1 = /^[a-zA-Z\u0590-\u05FF\u200f\u200e ]+$/
+        const fullnameValidate = regex1.test(updatedLoggedInUser.fullname);
+        let regex2 = /^[0][5]\d{8}$/
+        const phoneValidate = regex2.test(updatedLoggedInUser.phone);
+
+        let regex3 = /^\S+@\S+\.\S+$/
+        const emailValidate = regex3.test(updatedLoggedInUser.email);
+
+        console.log(updatedLoggedInUser.fullname, fullnameValidate, 
+            updatedLoggedInUser.phone, phoneValidate,
+            updatedLoggedInUser.email, emailValidate);
+
+        if (
+            !fullnameValidate || 
+            !phoneValidate || 
+            !emailValidate) {
+                setErrorMsg({txt:'אחד השדות אינו תקין - הטופס לא נשמר!',class:'error'})
+                setTimeout(()=>setErrorMsg({}),2000)
+                return
+            }
+            // All OK - lets save:
+            
+            const dataToUpdate = {
+                ...loggedInUser,
+                ...updatedLoggedInUser,
+                table: {
+                    ...state
+                }
+            }
+            userService.updateUserData(dataToUpdate)
+            setErrorMsg({txt:'הטופס נשמר בהצלחה!', class:'success'})
+            setTimeout(()=>setErrorMsg({}),2000)
     }
 
     if (!loggedInUser) return <div className='ltr'>Loading...</div>;
@@ -122,10 +147,11 @@ export const SettingsPage = () => {
                             id='name'
                             className={fullname || loggedInUser.fullname ? 'dirty' : ''}
                             type='text'
+                            pattern='^[a-zA-Z\u0590-\u05FF\u200f\u200e ]+$'
                             autoComplete='off'
                             autoCorrect='off'
                             name='fullname'
-                            value={loggedInUser?.fullname || fullname}
+                            value={fullname || loggedInUser.fullname}
                             onChange={handleChange}
                         />
                         <label htmlFor='name'>שם העובד</label>
@@ -134,17 +160,26 @@ export const SettingsPage = () => {
                         <input
                             id='phone'
                             type='phone'
+                            pattern='^[0][5]\d{8}$'
                             className={phone || loggedInUser.phone ? 'dirty ltr' : 'ltr'}
                             maxLength='10'
                             name='phone'
-                            value={loggedInUser.phone || phone}
+                            value={phone || loggedInUser.phone  }
                             onChange={handleChange}
                         />
                         <label htmlFor='phone'>מספר נייד</label>
                     </div>
                     <div>
-                        <input id='phone' type='email' className={loggedInUser.email || email ? 'dirty ltr' : 'ltr'} name='email' value={loggedInUser.email || email} onChange={handleChange} />
-                        <label htmlFor='phone'>אימייל</label>
+                        <input 
+                            id='email' 
+                            type='email' 
+                            pattern='^\S+@\S+\.\S+$'
+                            className={email || loggedInUser.email ? 'dirty ltr' : 'ltr'} 
+                            name='email' 
+                            value={email || loggedInUser.email} 
+                            onChange={handleChange} 
+                        />
+                        <label htmlFor='email'>אימייל</label>
                     </div>
                     <div>
                         <input
@@ -182,14 +217,15 @@ export const SettingsPage = () => {
                                             <select
                                                 id={`fromHours${idx}`}
                                                 onChange={(ev) => { onChangeTableHour(ev, idx, 'fromHours') }}
-                                                onChange={(ev) => {
-                                                    setState({ ...state, [`fromHours${idx}`]: ev.target.value});
-                                                }}
+
+                                                // onChange={(ev) => {
+                                                //     setState({ ...state, [`fromHours${idx}`]: ev.target.value});
+                                                // }}
                                                 value={state[`fromHours${idx}`]}
                                             >
                                                 <option>ללא</option>
                                                 {hours.map((hour, fromHourIdx) => {
-                                                    return <option key={`fromHour${idx}-${fromHourIdx}`}>{(hour + '').padStart(2, 0)}:00</option>;
+                                                    return <option name={hour} key={`fromHour${idx}-${fromHourIdx}`}>{(hour + '').padStart(2, 0)}:00</option>;
                                                 })}
                                             </select>
                                             -
@@ -218,7 +254,7 @@ export const SettingsPage = () => {
                     </div>
                 </div>
                 <button onClick={onSave}>שמור</button>
-                <button onClick={()=>console.log(toHoursRef.current[1].value)}>print refs</button>
+                <span className={`error-msg ${errorMsg.class}`}>{errorMsg.txt}</span>
             </section>
         );
 };
